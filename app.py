@@ -265,11 +265,39 @@ class ChatbotApp:
                 logging.error(f"Fehler beim Erstellen des Chat-Verzeichnisses '{chat_folder}': {str(e)}")
                 return
 
-        # Initialize chat messages
-        messages = [
-            {"role": "system", "content": selected_prompt},
-            {"role": "user", "content": user_input}
-        ]
+            # Initialize chat history with system prompt
+            chat_history = []
+            timestamp = datetime.utcnow().isoformat()
+            chat_history.append({'role': 'system', 'content': selected_prompt, 'timestamp': timestamp})
+        else:
+            # Load existing chat history
+            history_path = os.path.join(CHAT_HISTORY_FOLDER, self.current_chat_id, 'history.json')
+            if os.path.exists(history_path):
+                try:
+                    with open(history_path, 'r', encoding='utf-8') as f:
+                        chat_history = json.load(f)
+                    logging.debug(f"Chat-Historie aus '{history_path}' geladen.")
+                except Exception as e:
+                    messagebox.showerror("Fehler", f"Fehler beim Laden der Chat-Historie: {str(e)}")
+                    logging.error(f"Fehler beim Laden der Chat-Historie '{history_path}': {str(e)}")
+                    return
+            else:
+                # Falls die Historie nicht existiert, initialisiere mit System-Prompt
+                chat_history = []
+                timestamp = datetime.utcnow().isoformat()
+                chat_history.append({'role': 'system', 'content': selected_prompt, 'timestamp': timestamp})
+
+        # Append user input to chat history
+        timestamp = datetime.utcnow().isoformat()
+        chat_history.append({'role': 'user', 'content': user_input, 'timestamp': timestamp})
+
+        # Build messages for OpenAI API
+        messages = []
+        for entry in chat_history:
+            messages.append({
+                "role": entry['role'],
+                "content": entry['content']
+            })
 
         # Add attachment if present
         if self.current_attachment:
@@ -286,12 +314,6 @@ class ChatbotApp:
                         {"type": "image_url", "image_url": f"data:image/jpeg;base64,{self.current_attachment['content']}"}
                     ]
                 })
-
-        # Initialize chat history
-        chat_history = []
-        timestamp = datetime.utcnow().isoformat()
-        chat_history.append({'role': 'system', 'content': selected_prompt, 'timestamp': timestamp})
-        chat_history.append({'role': 'user', 'content': user_input, 'timestamp': timestamp})
 
         # Send request to OpenAI API
         try:
@@ -330,6 +352,7 @@ class ChatbotApp:
         self.current_attachment = None
         self.attachment_label.config(text="Keine Datei ausgewählt")
         logging.debug("Eingabefeld und Anhänge wurden zurückgesetzt.")
+
 
     def export_chat(self):
         """
