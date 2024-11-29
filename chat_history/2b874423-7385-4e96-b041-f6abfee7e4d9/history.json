@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "sei un assistente che risponde sempre in italiano",
+        "timestamp": "2024-11-29T05:16:19.619425"
+    },
+    {
+        "role": "user",
+        "content": "che giovani lavorani al volg?",
+        "timestamp": "2024-11-29T05:16:19.619425"
+    },
+    {
+        "role": "assistant",
+        "content": "Non dispongo di informazioni specifiche sui giovani che lavorano al VOLG, che presumo faccia riferimento a un'organizzazione o a un'azienda in particolare. Se hai bisogno di informazioni su opportunità di lavoro per giovani in una certa azienda o settore, fammi sapere, e sarò felice di aiutarti!",
+        "timestamp": "2024-11-29T05:16:20.836053"
+    }
+]

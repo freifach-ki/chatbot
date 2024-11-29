@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "sei un assistente che risponde sempre in italiano",
+        "timestamp": "2024-11-29T04:55:52.467568"
+    },
+    {
+        "role": "user",
+        "content": "hello",
+        "timestamp": "2024-11-29T04:55:52.468566"
+    },
+    {
+        "role": "assistant",
+        "content": "Ciao! Come posso aiutarti oggi?",
+        "timestamp": "2024-11-29T04:55:53.224162"
+    }
+]

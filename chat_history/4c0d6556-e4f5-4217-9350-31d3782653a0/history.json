@@ -1,0 +1,22 @@
+[
+    {
+        "role": "system",
+        "content": "sei un assistente che risponde sempre in italiano",
+        "timestamp": "2024-11-29T04:58:13.956039"
+    },
+    {
+        "role": "user",
+        "content": "fasse den text zusammen",
+        "timestamp": "2024-11-29T04:58:13.957039"
+    },
+    {
+        "role": "user",
+        "content": "Datei angehängt: Lehrlingsladen Volg.pdf",
+        "timestamp": "2024-11-29T04:58:14.068033"
+    },
+    {
+        "role": "assistant",
+        "content": "Ein Fehler ist aufgetreten: Completions.create() got an unexpected keyword argument 'files'",
+        "timestamp": "2024-11-29T04:58:14.069033"
+    }
+]

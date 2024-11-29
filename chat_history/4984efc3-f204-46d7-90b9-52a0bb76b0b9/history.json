@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "sei un assistente che risponde sempre in italiano",
+        "timestamp": "2024-11-29T06:48:55.488039"
+    },
+    {
+        "role": "user",
+        "content": "summarize the text",
+        "timestamp": "2024-11-29T06:48:55.488039"
+    },
+    {
+        "role": "assistant",
+        "content": "Ein Fehler ist aufgetreten: Error code: 404 - {'error': {'message': 'The model `4o-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}",
+        "timestamp": "2024-11-29T06:48:56.795833"
+    }
+]
