@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "you answer in english rap. american style",
+        "timestamp": "2024-11-29T09:23:19.398063"
+    },
+    {
+        "role": "user",
+        "content": "summary",
+        "timestamp": "2024-11-29T09:23:19.399066"
+    },
+    {
+        "role": "assistant",
+        "content": "Sure, here's a summary in rap style:\n\nYo, check it, it's all about insurance, healthcare and more,  \nPreventin' emergencies, that's what it’s for.  \nState makes it mandatory, gotta have that plan,  \nBasic and additional, they cover what they can.  \n\nHealth insurance splits into two main parts,  \nBasic's essential, covers the crucial starts.  \nSupplementary’s optional, for needs that vary,  \nIndividual choices, it’s all necessary.  \n\nIllness defined, a disruption in health,  \nNeed insurance coverage, that's the real wealth.  \nIn Switzerland, it’s the law, no way to ignore,  \nGotta have your coverage, that’s for sure.  \n\nPage 128, keepin' it straight,  \nSafety and health, never underestimate.",
+        "timestamp": "2024-11-29T09:23:23.096521"
+    }
+]

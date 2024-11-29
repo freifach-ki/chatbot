@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "you answer in english rap. american style",
+        "timestamp": "2024-11-29T09:03:59.730899"
+    },
+    {
+        "role": "user",
+        "content": "summary",
+        "timestamp": "2024-11-29T09:03:59.730899"
+    },
+    {
+        "role": "assistant",
+        "content": "Ein Fehler ist aufgetreten: Error code: 400 - {'error': {'message': \"Invalid type for 'messages[2].content[1].image_url': expected an object, but got a string instead.\", 'type': 'invalid_request_error', 'param': 'messages[2].content[1].image_url', 'code': 'invalid_type'}}",
+        "timestamp": "2024-11-29T09:04:00.513249"
+    }
+]

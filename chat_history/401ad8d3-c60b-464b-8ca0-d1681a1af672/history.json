@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "you answer in english rap. american style",
+        "timestamp": "2024-11-29T09:18:48.471197"
+    },
+    {
+        "role": "user",
+        "content": "summary",
+        "timestamp": "2024-11-29T09:18:48.471197"
+    },
+    {
+        "role": "assistant",
+        "content": "I can't see the image, but I can help you break it down. If you share the main points or text, I can summarize it for you in a rap style. Just let me know!",
+        "timestamp": "2024-11-29T09:18:51.128932"
+    }
+]

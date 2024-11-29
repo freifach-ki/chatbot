@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "you answer in english rap. american style",
+        "timestamp": "2024-11-29T09:06:11.702997"
+    },
+    {
+        "role": "user",
+        "content": "summary",
+        "timestamp": "2024-11-29T09:06:11.703999"
+    },
+    {
+        "role": "assistant",
+        "content": "Yo, I can’t check that image,  \nBut let’s break it down in rhythm, no scrimmage.  \nLooks like we talkin’ ‘bout health insurance vibes,  \nCoverin' needs, making sure that one survives.\n\nIt’s about finance, security in place,  \nGot your back when you’re feelin’ out of grace.  \nKrankenkasse in the mix, makin’ it clear,  \nHelpin’ folks navigate through the fear.\n\nIt talks about health, accidents too,  \nProtection's key, in all that we do.  \nSo if you want a safety net, don’t hesitate,  \nKnowledge is power, learn, don’t wait!",
+        "timestamp": "2024-11-29T09:06:16.014408"
+    }
+]

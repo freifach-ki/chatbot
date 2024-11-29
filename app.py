@@ -12,6 +12,8 @@ from PIL import Image
 import base64
 import shutil
 import logging
+import io
+
 
 # =========================
 # Konfiguration und Setup
@@ -102,8 +104,10 @@ class ChatbotApp:
         self.model_label.pack(side='left')
         
         self.selected_model = StringVar(master)
-        self.selected_model.set("gpt-4o-mini")  # Standardmodell setzen
-        self.model_menu = OptionMenu(self.model_frame, self.selected_model, "gpt-4o-mini", "gpt-4o")
+        self.selected_model.set("gpt-4o-mini")  # Default model
+        self.model_menu = OptionMenu(self.model_frame, self.selected_model, 
+            "gpt-4o-mini", "gpt-4o")
+
         self.model_menu.pack(side='left')
 
         # Attachment Frame
@@ -220,142 +224,156 @@ class ChatbotApp:
 
     def process_image(self, file_path):
         """
-        Kodiert ein Bild in Base64.
+        Verarbeitet und verkleinert ein Bild für die OpenAI API.
         """
         try:
-            with open(file_path, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                logging.debug(f"Bild '{file_path}' erfolgreich verarbeitet.")
-                return {"type": "image", "content": encoded_string}
+            # Öffne das Bild
+            img = Image.open(file_path)
+
+            # Konvertiere in RGB-Modus, falls erforderlich
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+
+            # Verkleinern, wenn das Bild zu groß ist
+            max_size = 1000  # Reduzierte Maximalgröße
+            if max(img.size) > max_size:
+                img.thumbnail((max_size, max_size))
+
+            # Speichern in Bytes
+            img_byte_arr = io.BytesIO()
+            img.save(img_byte_arr, format='JPEG')
+            img_byte_arr = img_byte_arr.getvalue()
+
+            # Base64-Kodierung
+            encoded_image = base64.b64encode(img_byte_arr).decode('utf-8')
+            
+            return {"type": "image", "content": encoded_image}
+
         except Exception as e:
             messagebox.showerror("Fehler", f"Failed to process image: {str(e)}")
             logging.error(f"Failed to process image '{file_path}': {str(e)}")
             return None
 
     def start_chat(self):
-        """
-        Startet den Chat, sendet die Eingabe an OpenAI und zeigt die Antwort an.
-        """
-        prompt_name = self.selected_prompt.get()
-        user_input = self.user_input_text.get("1.0", END).strip()
-        model = self.selected_model.get()
+        try:
+            prompt_name = self.selected_prompt.get()
+            user_input = self.user_input_text.get("1.0", END).strip()
+            model = self.selected_model.get()
 
-        if not user_input:
-            messagebox.showwarning("Eingabe erforderlich", "Bitte gib eine Nachricht ein.")
-            logging.warning("Benutzer hat versucht zu senden, ohne eine Eingabe zu tätigen.")
-            return
-
-        # Load selected prompt
-        selected_prompt = None
-        for prompt in self.prompts:
-            if prompt['name'] == prompt_name:
-                selected_prompt = prompt['content']
-                break
-
-        if not selected_prompt:
-            messagebox.showerror("Fehler", "Ausgewählter Prompt nicht gefunden.")
-            logging.error(f"Ausgewählter Prompt '{prompt_name}' nicht gefunden.")
-            return
-
-        # Generate unique chat ID if not exists
-        if not self.current_chat_id:
-            self.current_chat_id = str(uuid.uuid4())
-            chat_folder = os.path.join(CHAT_HISTORY_FOLDER, self.current_chat_id)
-            try:
-                os.makedirs(chat_folder, exist_ok=True)
-                logging.debug(f"Chat-Verzeichnis '{chat_folder}' erstellt.")
-            except Exception as e:
-                messagebox.showerror("Fehler", f"Fehler beim Erstellen des Chat-Verzeichnisses: {str(e)}")
-                logging.error(f"Fehler beim Erstellen des Chat-Verzeichnisses '{chat_folder}': {str(e)}")
+            if not user_input:
+                messagebox.showwarning("Eingabe erforderlich", "Bitte gib eine Nachricht ein.")
+                logging.warning("Benutzer hat versucht zu senden, ohne eine Eingabe zu tätigen.")
                 return
 
-            # Initialize chat history with system prompt
-            chat_history = []
-            timestamp = datetime.utcnow().isoformat()
-            chat_history.append({'role': 'system', 'content': selected_prompt, 'timestamp': timestamp})
-        else:
-            # Load existing chat history
-            history_path = os.path.join(CHAT_HISTORY_FOLDER, self.current_chat_id, 'history.json')
-            if os.path.exists(history_path):
-                try:
-                    with open(history_path, 'r', encoding='utf-8') as f:
-                        chat_history = json.load(f)
-                    logging.debug(f"Chat-Historie aus '{history_path}' geladen.")
-                except Exception as e:
-                    messagebox.showerror("Fehler", f"Fehler beim Laden der Chat-Historie: {str(e)}")
-                    logging.error(f"Fehler beim Laden der Chat-Historie '{history_path}': {str(e)}")
-                    return
-            else:
-                # Falls die Historie nicht existiert, initialisiere mit System-Prompt
+            # Load selected prompt
+            selected_prompt = None
+            for prompt in self.prompts:
+                if prompt['name'] == prompt_name:
+                    selected_prompt = prompt['content']
+                    break
+
+            if not selected_prompt:
+                messagebox.showerror("Fehler", "Ausgewählter Prompt nicht gefunden.")
+                logging.error(f"Ausgewählter Prompt '{prompt_name}' nicht gefunden.")
+                return
+
+            # Generate unique chat ID if not exists
+            if not self.current_chat_id:
+                self.current_chat_id = str(uuid.uuid4())
+                chat_folder = os.path.join(CHAT_HISTORY_FOLDER, self.current_chat_id)
+                os.makedirs(chat_folder, exist_ok=True)
+                logging.debug(f"Chat-Verzeichnis '{chat_folder}' erstellt.")
+
+                # Initialize chat history with system prompt
                 chat_history = []
                 timestamp = datetime.utcnow().isoformat()
                 chat_history.append({'role': 'system', 'content': selected_prompt, 'timestamp': timestamp})
+            else:
+                # Load existing chat history
+                history_path = os.path.join(CHAT_HISTORY_FOLDER, self.current_chat_id, 'history.json')
+                if os.path.exists(history_path):
+                    with open(history_path, 'r', encoding='utf-8') as f:
+                        chat_history = json.load(f)
+                    logging.debug(f"Chat-Historie aus '{history_path}' geladen.")
+                else:
+                    chat_history = []
+                    timestamp = datetime.utcnow().isoformat()
+                    chat_history.append({'role': 'system', 'content': selected_prompt, 'timestamp': timestamp})
 
-        # Append user input to chat history
-        timestamp = datetime.utcnow().isoformat()
-        chat_history.append({'role': 'user', 'content': user_input, 'timestamp': timestamp})
+            # Append user input to chat history
+            timestamp = datetime.utcnow().isoformat()
+            chat_history.append({'role': 'user', 'content': user_input, 'timestamp': timestamp})
 
-        # Build messages for OpenAI API
-        messages = []
-        for entry in chat_history:
-            messages.append({
-                "role": entry['role'],
-                "content": entry['content']
-            })
-
-        # Add attachment if present
-        if self.current_attachment:
-            if self.current_attachment["type"] == "pdf":
+            # Build messages for OpenAI API
+            messages = []
+            for entry in chat_history:
                 messages.append({
-                    "role": "user",
-                    "content": f"Here's the content of the attached PDF:\n{self.current_attachment['content']}"
-                })
-            elif self.current_attachment["type"] == "image":
-                messages.append({
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": "Here's an attached image:"},
-                        {"type": "image_url", "image_url": f"data:image/jpeg;base64,{self.current_attachment['content']}"}
-                    ]
+                    "role": entry['role'],
+                    "content": entry['content']
                 })
 
-        # Send request to OpenAI API
-        try:
+            # Add attachment if present
+            if self.current_attachment:
+                if self.current_attachment["type"] == "pdf":
+                    messages.append({
+                        "role": "user",
+                        "content": f"Here's the content of the attached PDF:\n{self.current_attachment['content']}"
+                    })
+                elif self.current_attachment["type"] == "image":
+                    messages.append({
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Here's an attached image:"
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{self.current_attachment['content']}",
+                                    "detail": "low"
+                                }
+                            }
+                        ]
+                    })
+
+            # If we have an image attachment, use gpt-4-vision-preview model
+            if self.current_attachment and self.current_attachment["type"] == "image":
+                model = "gpt-4o"
+
+            # Send request to OpenAI API
             response = client.chat.completions.create(
                 model=model,
-                messages=messages
+                messages=messages,
+                max_tokens=8000,
+                temperature=0.6
             )
             reply = response.choices[0].message.content
             chat_history.append({'role': 'assistant', 'content': reply, 'timestamp': datetime.utcnow().isoformat()})
             logging.debug("Antwort von OpenAI erfolgreich erhalten.")
-        except Exception as e:
-            reply = f"Ein Fehler ist aufgetreten: {str(e)}"
-            chat_history.append({'role': 'assistant', 'content': reply, 'timestamp': datetime.utcnow().isoformat()})
-            logging.error(f"Fehler bei der OpenAI-Anfrage: {str(e)}")
 
-        # Save chat history
-        history_path = os.path.join(CHAT_HISTORY_FOLDER, self.current_chat_id, 'history.json')
-        try:
+            # Save chat history
+            history_path = os.path.join(CHAT_HISTORY_FOLDER, self.current_chat_id, 'history.json')
             with open(history_path, 'w', encoding='utf-8') as f:
                 json.dump(chat_history, f, ensure_ascii=False, indent=4)
             logging.debug(f"Chat-Historie erfolgreich in '{history_path}' gespeichert.")
+
+            # Update chat display
+            self.chat_display.configure(state='normal')
+            self.chat_display.insert(END, f"Du: {user_input}\n")
+            self.chat_display.insert(END, f"ChatGPT: {reply}\n\n")
+            self.chat_display.configure(state='disabled')
+            self.chat_display.see(END)
+
+            # Clear input and attachment
+            self.user_input_text.delete("1.0", END)
+            self.current_attachment = None
+            self.attachment_label.config(text="Keine Datei ausgewählt")
+            logging.debug("Eingabefeld und Anhänge wurden zurückgesetzt.")
+
         except Exception as e:
-            messagebox.showerror("Fehler", f"Fehler beim Speichern der Chat-Historie: {str(e)}")
-            logging.error(f"Fehler beim Speichern der Chat-Historie '{history_path}': {str(e)}")
-            return
-
-        # Update chat display
-        self.chat_display.configure(state='normal')
-        self.chat_display.insert(END, f"Du: {user_input}\n")
-        self.chat_display.insert(END, f"ChatGPT: {reply}\n\n")
-        self.chat_display.configure(state='disabled')
-        self.chat_display.see(END)
-
-        # Clear input and attachment
-        self.user_input_text.delete("1.0", END)
-        self.current_attachment = None
-        self.attachment_label.config(text="Keine Datei ausgewählt")
-        logging.debug("Eingabefeld und Anhänge wurden zurückgesetzt.")
+            messagebox.showerror("Fehler", f"Ein Fehler ist aufgetreten: {str(e)}")
+            logging.error(f"Fehler in start_chat: {str(e)}")
 
 
     def export_chat(self):
