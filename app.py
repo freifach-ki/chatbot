@@ -150,6 +150,10 @@ class ChatbotApp:
         self.export_button = Button(master, text="Chat exportieren", command=self.export_chat)
         self.export_button.pack(pady=5)
 
+        # Clear Chat Button
+        self.clear_button = Button(master, text="Chat löschen", command=self.clear_chat)
+        self.clear_button.pack(pady=5)
+
         # Initialize attachment storage
         self.current_attachment = None
         self.current_chat_id = None
@@ -422,6 +426,22 @@ class ChatbotApp:
             except Exception as e:
                 messagebox.showwarning("Warnung", f"Fehler beim Löschen der temporären Datei: {str(e)}")
                 logging.warning(f"Fehler beim Löschen der temporären Datei '{exported_path}': {str(e)}")
+
+    def clear_chat(self):
+        """
+        Löscht den Chat-Anzeigebereich und setzt die Sitzung zurück.
+        """
+        # Chat-Anzeigebereich leeren
+        self.chat_display.configure(state='normal')
+        self.chat_display.delete("1.0", END)
+        self.chat_display.configure(state='disabled')
+
+        # Sitzung zurücksetzen
+        self.current_chat_id = None
+        self.current_attachment = None
+        self.attachment_label.config(text="Keine Datei ausgewählt")
+        logging.debug("Chat wurde gelöscht und Sitzung zurückgesetzt.")
+
 
 # =========================
 # Hauptfunktion
