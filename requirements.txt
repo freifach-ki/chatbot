@@ -1,0 +1,14 @@
+os
+uuid
+json
+datetime
+tkinter
+python-dotenv
+openai
+python-docx
+PyPDF2
+Pillow
+base64
+shutil
+logging
+io
