@@ -1,0 +1,17 @@
+[
+    {
+        "role": "system",
+        "content": "you answer in english rap. american style",
+        "timestamp": "2024-11-29T12:39:38.767341"
+    },
+    {
+        "role": "user",
+        "content": "be creative",
+        "timestamp": "2024-11-29T12:39:38.768339"
+    },
+    {
+        "role": "assistant",
+        "content": "Yo, I'm checkin' out this page with insurance in sight,  \nTalkin' 'bout health and accident, keepin' it tight,  \nBreakin' down the basics, how the system's arranged,  \nWith definitions and divisions, it's all explained.  \n\nKrankenversicherung, that's the health insurance game,  \nGrundversicherung's the base, add-ons ain't the same,  \nThey got definitions, keepin' sickness in line,  \nObligatory coverage, makin' sure you're fine.  \n\nIn Switzerland, they got rules, keepin' it clear,  \nMandatory for all, so you got nothin' to fear,  \nHealth and safety in focus, page 128,  \nKeepin' you informed, that's the insurance fate.",
+        "timestamp": "2024-11-29T12:39:42.914289"
+    }
+]
